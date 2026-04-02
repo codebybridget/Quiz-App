@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import "./App.css";
-
 
 const questions = [
   { question: "What is the capital of France?", options: ["Paris", "London", "Rome"], answer: "Paris" },
@@ -37,39 +36,37 @@ function App() {
   const [showResult, setShowResult] = useState(false);
   const [timer, setTimer] = useState(15);
 
-  useEffect(() => {
-    if (started && !showResult) {
-      if (timer === 0) {
-        handleTimeout();
-      }
-
-      const countdown = setInterval(() => {
-        setTimer(prev => prev > 0 ? prev - 1 : 0);
-      }, 1000);
-
-      return () => clearInterval(countdown);
-    }
-  }, [timer, started, showResult]);
-
-  const handleAnswer = (option) => {
-    if (option === questions[current].answer) {
-      setScore(score + 1);
-    }
-    nextQuestion();
-  };
-
-  const handleTimeout = () => {
-    nextQuestion();
-  };
-
-  const nextQuestion = () => {
+  const nextQuestion = useCallback(() => {
     const next = current + 1;
+
     if (next < questions.length) {
       setCurrent(next);
-      setTimer(15); 
+      setTimer(15);
     } else {
       setShowResult(true);
     }
+  }, [current]);
+
+  useEffect(() => {
+    if (!started || showResult) return;
+
+    if (timer === 0) {
+      nextQuestion();
+      return;
+    }
+
+    const countdown = setInterval(() => {
+      setTimer(prev => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+
+    return () => clearInterval(countdown);
+  }, [timer, started, showResult, nextQuestion]);
+
+  const handleAnswer = (option) => {
+    if (option === questions[current].answer) {
+      setScore(prev => prev + 1);
+    }
+    nextQuestion();
   };
 
   const startQuiz = () => {
@@ -96,9 +93,12 @@ function App() {
         <div className="quiz">
           <h3>Time Left: {timer}s</h3>
           <h2>{questions[current].question}</h2>
+
           <div className="options">
             {questions[current].options.map((option, idx) => (
-              <button key={idx} onClick={() => handleAnswer(option)}>{option}</button>
+              <button key={idx} onClick={() => handleAnswer(option)}>
+                {option}
+              </button>
             ))}
           </div>
         </div>
@@ -108,3 +108,4 @@ function App() {
 }
 
 export default App;
+
