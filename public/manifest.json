@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "short_name": "React App",
   "name": "Create React App Sample",
   "icons": [
@@ -22,4 +23,12 @@
   "display": "standalone",
   "theme_color": "#000000",
   "background_color": "#ffffff"
+=======
+  "short_name": "QuizApp",
+  "name": "My Quiz App",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#000000"
+>>>>>>> 56bf5c1 (Fix React hook warnings and improve quiz app logic)
 }
